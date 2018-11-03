@@ -9,13 +9,15 @@ CharlieplexingClass::CharlieplexingClass(){
   lightingTime=1000; //us
 }
 
+
+
 /**
  * @brief Set using arduino port. This function same setUsePorts().
  *
  * @param[in] ports
  * @param[in] numOfPorts
  */
-inline void begin(byte ports[], byte numOfPorts){
+inline void CharlieplexingClass::begin(byte ports[], byte numOfPorts){
   setUsePorts(ports, numOfPorts);
 }
 
@@ -52,6 +54,7 @@ void CharlieplexingClass::setUsePorts(byte ports[], byte numOfPorts){
     setUsePort(ports[i]);
   }
 }
+
 
 /**
  * @brief Set light on time, when called OneShot() function.

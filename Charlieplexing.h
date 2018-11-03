@@ -6,7 +6,8 @@
  * @date 2018-10-31
  *
  * @copyright Copyright (c) 2018 woodenCaliper
- * This software is released under the MIT License, see LICENSE.txt.
+ * Licensed under the Apache License, Version 2.0 (the "License").
+ * See LICENSE.txt.
  */
 
 #ifndef CHARLIEPLEXING_H_
@@ -21,11 +22,14 @@
 class CharlieplexingClass{
   public:
   CharlieplexingClass();
+  
+  inline void begin(byte ports[], byte numOfPorts);
 
   unsigned int getLedId(byte anodePort, byte cathodePort);
   void setUsePort(byte port);
   void setUsePorts(byte ports[], byte numOfPorts);
   void setOneShotTime(unsigned long lightOnTime);
+  
 
   void light(byte anodePort, byte cathodePort, bool lightOn);
   inline void light(unsigned int ledId, bool lightOn);
