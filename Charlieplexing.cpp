@@ -5,53 +5,53 @@
  *
  */
 CharlieplexingClass::CharlieplexingClass(){
-  numOfUsePort=0;
+  numOfUsePin=0;
   lightingTime=1000; //us
 }
 
 
 
 /**
- * @brief Set using arduino port. This function same setUsePorts().
+ * @brief Set using arduino port. This function same setUsePins().
  *
- * @param[in] ports
- * @param[in] numOfPorts
+ * @param[in] pinsNumber
+ * @param[in] numOfPins
  */
-inline void CharlieplexingClass::begin(byte ports[], byte numOfPorts){
-  setUsePorts(ports, numOfPorts);
+inline void CharlieplexingClass::begin(byte pinsNumber[], byte numOfPins){
+  setUsePins(pinsNumber, numOfPins);
 }
 
 /**
  * @brief Allocate unique LED ID.
  *
- * @param[in] anodePort
- * @param[in] cathodePort
+ * @param[in] anodePin
+ * @param[in] cathodePin
  * @return[in] unsigned int unique LED ID
  */
-unsigned int CharlieplexingClass::getLedId(byte anodePort, byte cathodePort){
-  return ((unsigned int)anodePort<<8) | cathodePort;
+unsigned int CharlieplexingClass::getLedId(byte anodePin, byte cathodePin){
+  return ((unsigned int)anodePin<<8) | cathodePin;
 }
 
 /**
- * @brief Set using arduino port.
+ * @brief Set using arduino pin.
  *
- * @param[in] port  port that connecting to LED
+ * @param[in] pin  pin that connecting to LED
  */
-void CharlieplexingClass::setUsePort(byte port){
-  usePorts[numOfUsePort]=port;
-  numOfUsePort++;
-  pinMode(port, INPUT);
+void CharlieplexingClass::setUsePin(byte pin){
+  usePins[numOfUsePin]=pin;
+  numOfUsePin++;
+  pinMode(pin, INPUT);
 }
 
 /**
- * @brief Set using arduino ports.
+ * @brief Set using arduino pins.
  *
- * @param[in] ports[]     any ports that connecting to LED
- * @param[in] numOfPorts  length of ports array
+ * @param[in] pins[]     any pins that connecting to LED
+ * @param[in] numOfUsePins  length of pins array
  */
-void CharlieplexingClass::setUsePorts(byte ports[], byte numOfPorts){
-  for(byte i=0; i<numOfPorts; i++){
-    setUsePort(ports[i]);
+void CharlieplexingClass::setUsePins(byte pins[], byte numOfUsePins){
+  for(byte i=0; i<numOfUsePins; i++){
+    setUsePin(pins[i]);
   }
 }
 
@@ -66,27 +66,27 @@ void CharlieplexingClass::setOneShotTime(unsigned long lightOnTime){
 }
 
 /**
- * @brief Direct LED port control.
+ * @brief Direct LED pin control.
  *
- * @param[in] anodePort     port Number connected to the LED's anode.
- * @param[in] cathodePort   port Number connected to the LED's cathode.
+ * @param[in] anodePin     pin Number connected to the LED's anode.
+ * @param[in] cathodePin   pin Number connected to the LED's cathode.
  * @param[in] lightOn       true:light on, false:light off
  */
-void CharlieplexingClass::light(byte anodePort, byte cathodePort, bool lightOn){
+void CharlieplexingClass::light(byte anodePin, byte cathodePin, bool lightOn){
   if(lightOn){  //anode:HIGH, cathode:LOW
-    pinMode(anodePort, OUTPUT);
-    digitalWrite(anodePort, HIGH);
-    pinMode(cathodePort, OUTPUT);
-    digitalWrite(cathodePort, LOW);
+    pinMode(anodePin, OUTPUT);
+    digitalWrite(anodePin, HIGH);
+    pinMode(cathodePin, OUTPUT);
+    digitalWrite(cathodePin, LOW);
   }
   else{    //set high inpedance
-    pinMode(anodePort, INPUT);
-    pinMode(cathodePort, INPUT);
+    pinMode(anodePin, INPUT);
+    pinMode(cathodePin, INPUT);
   }
 }
 
 /**
- * @brief Direct LED port control.
+ * @brief Direct LED pin control.
  *
  * @param[in] ledId   LED ID by getLedId() function.
  * @param[in] lightOn true:light on, false:light off
@@ -96,18 +96,18 @@ inline void CharlieplexingClass::light(unsigned int ledId, bool lightOn){
 }
 
 /**
- * @brief Light on LED and light off after wait time, you set setOneShotTime() function.
+ * @brief Light on the LED. -> wait for time that you set in setOneShotTime() function. -> light off the LED.
  *
- * @param[in] anodePort
- * @param[in] cathodePort
+ * @param[in] anodePin
+ * @param[in] cathodePin
  */
-void CharlieplexingClass::lightOneShot(byte anodePort, byte cathodePort){
-  light(anodePort, cathodePort, true);
+void CharlieplexingClass::lightOneShot(byte anodePin, byte cathodePin){
+  light(anodePin, cathodePin, true);
   delayMicroseconds(lightingTime);
-  light(anodePort, cathodePort, false);
+  light(anodePin, cathodePin, false);
 }
 /**
- * @brief Light on LED and light off after wait time, you set setOneShotTime() function.
+ * @brief Light on the LED. -> wait for time that you set in setOneShotTime() function. -> light off the LED.
  *
  * @param[in] ledId
  */
@@ -116,7 +116,7 @@ inline void CharlieplexingClass::lightOneShot(unsigned int ledId){
 }
 
 /**
- * @brief Light multi LEDs. but cannot be light LEDs using same port.
+ * @brief Control multi LEDs. but cannot be light on the LEDs using same pin.
  *
  * @param[in] ledsId[]    address of LEDs ID array by getLedId() function.
  * @param[in] numOfLeds   length of ledsId array
@@ -129,12 +129,12 @@ void CharlieplexingClass::multiLight(unsigned int ledsId[], byte numOfLeds, bool
 }
 
 /**
- * @brief Light off all LED.
+ * @brief Light off the all LED.
  * @param
  */
 void CharlieplexingClass::allLightOff(){
-  for(byte i=0; i<numOfUsePort; i++){
-    pinMode(usePorts[i], INPUT);
+  for(byte i=0; i<numOfUsePin; i++){
+    pinMode(usePins[i], INPUT);
   }
 }
 
@@ -143,17 +143,17 @@ void CharlieplexingClass::allLightOff(){
  *
  * @param[in] ledsId[]    address of LEDs ID array by getLedId() function.
  * @param[in] numOfLeds   length of ledsId array
- * @details take processing time about (oneShotTime)*(Number of using port)+300us
+ * @details take processing time about (oneShotTime)*(Number of using pin)+300us
  */
 void CharlieplexingClass::multiLightOneShot(unsigned int ledsId[], byte numOfLeds){
   byte alreadyOnCount=0;
-  unsigned int afterLightLeds[MAX_PORT];
+  unsigned int afterLightLeds[MAX_PIN];
   byte afterLedsCount=0;
 
   allLightOff();
-  for(byte i=0; i<numOfUsePort; i++){
+  for(byte i=0; i<numOfUsePin; i++){
     for(byte j=0; j<numOfLeds; j++){
-      if(usePorts[i]==(byte)ledsId[j]){  //usePorts[i]がcathodeなのを選択
+      if(usePins[i]==(byte)ledsId[j]){  //usePins[i]がcathodeなのを選択
         afterLightLeds[afterLedsCount]=ledsId[j];
         afterLedsCount++;
         alreadyOnCount++;

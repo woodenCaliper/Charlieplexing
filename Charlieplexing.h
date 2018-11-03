@@ -15,25 +15,25 @@
 
 #include <arduino.h>
 
-#ifndef MAX_PORT
-#define MAX_PORT 20
+#ifndef MAX_PIN
+#define MAX_PIN 20
 #endif
 
 class CharlieplexingClass{
   public:
   CharlieplexingClass();
   
-  inline void begin(byte ports[], byte numOfPorts);
+  inline void begin(byte pinsNumber[], byte numOfPins);
 
-  unsigned int getLedId(byte anodePort, byte cathodePort);
-  void setUsePort(byte port);
-  void setUsePorts(byte ports[], byte numOfPorts);
+  unsigned int getLedId(byte anodePin, byte cathodePin);
+  void setUsePin(byte pin);
+  void setUsePins(byte pins[], byte numOfpins);
   void setOneShotTime(unsigned long lightOnTime);
   
 
-  void light(byte anodePort, byte cathodePort, bool lightOn);
+  void light(byte anodePin, byte cathodePin, bool lightOn);
   inline void light(unsigned int ledId, bool lightOn);
-  void lightOneShot(byte anodePort, byte cathodePort);
+  void lightOneShot(byte anodePin, byte cathodePin);
   inline void lightOneShot(unsigned int ledId);
 
   void multiLight(unsigned int ledsId[], byte numOfLeds, bool lightOn);
@@ -41,8 +41,8 @@ class CharlieplexingClass{
   void allLightOff();
 
   private:
-  byte usePorts[MAX_PORT];
-  byte numOfUsePort;
+  byte usePins[MAX_PIN];
+  byte numOfUsePin;
   unsigned long lightingTime;
   const int HIGH_INP=-1;
 };
