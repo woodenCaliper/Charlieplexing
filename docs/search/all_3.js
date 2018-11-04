@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['getledid',['getLedId',['../class_charlieplexing_class.html#af3c07c133a9e96cfcbc80c2bc9a207e2',1,'CharlieplexingClass']]]
+  ['lightoneshot',['lightOneShot',['../class_charlieplexing_class.html#af17e5f97d11352d80c38a8e139427133',1,'CharlieplexingClass']]]
 ];

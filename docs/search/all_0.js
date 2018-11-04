@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['alllightoff',['allLightOff',['../class_charlieplexing_class.html#adaf5362f5fc943b80fc4bf8cca822972',1,'CharlieplexingClass']]]
+  ['begin',['begin',['../class_charlieplexing_class.html#ad3d12047c6824cff2b12054fc3794cad',1,'CharlieplexingClass']]]
 ];

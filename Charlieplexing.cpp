@@ -135,8 +135,8 @@ void CharlieplexingClass::multiLightOneShot(unsigned int ledsId[], byte numOfLed
 /**
  * @brief set LEDs for light in updateLedState() function.
  * 
- * @param ledsId[]  address of LEDs ID array by getLedId() function.
- * @param numOfLeds length of ledsId array
+ * @param[in] ledsId[]  address of LEDs ID array by getLedId() function.
+ * @param[in] numOfLeds length of ledsId array
  */
 void CharlieplexingClass::setLedState(unsigned int ledsId[], byte numOfLeds){
   for(byte i=0; i<numOfLeds; i++){
