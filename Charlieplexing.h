@@ -23,28 +23,33 @@ class CharlieplexingClass{
   public:
   CharlieplexingClass();
   
-  inline void begin(byte pinsNumber[], byte numOfPins);
+  //setting functions>>
+  void begin(byte pinsNumber[], byte numOfPins);
+  void setOneShotTime(unsigned long lightOnTime);  
+  //<<setting functions
 
-  unsigned int getLedId(byte anodePin, byte cathodePin);
-  void setUsePin(byte pin);
-  void setUsePins(byte pins[], byte numOfpins);
-  void setOneShotTime(unsigned long lightOnTime);
   
-
-  void light(byte anodePin, byte cathodePin, bool lightOn);
-  inline void light(unsigned int ledId, bool lightOn);
-  void lightOneShot(byte anodePin, byte cathodePin);
-  inline void lightOneShot(unsigned int ledId);
-
-  void multiLight(unsigned int ledsId[], byte numOfLeds, bool lightOn);
+  unsigned int getLedId(byte anodePin, byte cathodePin);  
+  
+  void lightOneShot(unsigned int ledId);
   void multiLightOneShot(unsigned int ledsId[], byte numOfLeds);
+  
+  void setLedState(unsigned int ledsId[], byte numOfLeds);
+  void updateLightingState();
+
+  private:  //functions
+  void light(unsigned int ledId, bool lightOn);
   void allLightOff();
 
-  private:
+  private:  //variables
   byte usePins[MAX_PIN];
   byte numOfUsePin;
   unsigned long lightingTime;
   const int HIGH_INP=-1;
+
+  unsigned int settedLeds[100];
+  byte numOfSettedLeds;
+  byte drivingUsePinAdrs;
 };
 
 #endif
