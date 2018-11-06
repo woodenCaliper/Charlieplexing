@@ -188,12 +188,12 @@ Public Member Functions</h2></td></tr>
 <p>Allocate unique LED ID. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">anodePin</td><td></td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">cathodePin</td><td></td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">anodePin</td><td>arduino pin conected to LED anode </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">cathodePin</td><td>arduino pin conected to LED cathode </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>[in] unsigned int unique LED ID </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>unsigned int unique LED ID </dd></dl>
 
 </div>
 </div>
@@ -257,7 +257,8 @@ Public Member Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
-<p>take processing time about (oneShotTime)*(Number of using pin)+300us </p>
+<p>take processing time about (oneShotTime)*(Number of using pin)+300us.<br />
+ WARN: if this use, overwrite the config in <a class="el" href="class_charlieplexing_class.html#a9c75cc8f617ece6ab2eb52d918280288" title="set LEDs for light in updateLedState() function. ">setLedState()</a> function. </p>
 
 </div>
 </div>
@@ -342,10 +343,11 @@ Public Member Functions</h2></td></tr>
 <p>light LED function for use timer. repeat this at regular intervals </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname"></td><td></td></tr>
+    <tr><td class="paramname">notting</td><td></td></tr>
   </table>
   </dd>
 </dl>
+<p>I recommend do this at about 2ms intervals </p>
 
 </div>
 </div>
