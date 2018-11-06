@@ -41,7 +41,7 @@ var NAVTREE =
 
 var NAVTREEINDEX =
 [
-"_charlieplexing_8h.html"
+"_charlieplexing_8cpp.html"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';
