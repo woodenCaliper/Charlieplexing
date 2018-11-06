@@ -35,9 +35,9 @@ void CharlieplexingClass::begin(byte pins[], byte numOfPins){
 /**
  * @brief Allocate unique LED ID.
  *
- * @param[in] anodePin
- * @param[in] cathodePin
- * @return[in] unsigned int unique LED ID
+ * @param[in] anodePin arduino pin conected to LED anode
+ * @param[in] cathodePin arduino pin conected to LED cathode
+ * @return unsigned int unique LED ID
  */
 unsigned int CharlieplexingClass::getLedId(byte anodePin, byte cathodePin){
   return ((unsigned int)anodePin<<8) | cathodePin;
@@ -103,9 +103,18 @@ void CharlieplexingClass::allLightOff(){
  *
  * @param[in] ledsId[]    address of LEDs ID array by getLedId() function.
  * @param[in] numOfLeds   length of ledsId array
- * @details take processing time about (oneShotTime)*(Number of using pin)+300us
+ * @details take processing time about (oneShotTime)*(Number of using pin)+300us.<br>
+ *          WARN: if this use, overwrite the config in setLedState() function.
  */
 void CharlieplexingClass::multiLightOneShot(unsigned int ledsId[], byte numOfLeds){
+  setLedState(ledId, numOfLeds);
+  for(uint8_t i=0; i<usePins, i++){
+    updateLightingState();
+    delayMicroseconds(lightingTime);
+  }
+
+
+  /*
   byte alreadyOnCount=0;
   unsigned int afterLightLeds[MAX_PIN];
   byte afterLedsCount=0;
@@ -130,6 +139,7 @@ void CharlieplexingClass::multiLightOneShot(unsigned int ledsId[], byte numOfLed
     }
     afterLedsCount=0;
   }
+  */
 }
 
 /**
@@ -148,7 +158,8 @@ void CharlieplexingClass::setLedState(unsigned int ledsId[], byte numOfLeds){
 
 /**
  * @brief light LED function for use timer. repeat this at regular intervals
- * @param 
+ * @param notting
+ * @details I recommend do this at about 2ms intervals
  */
 void CharlieplexingClass::updateLightingState(){
   allLightOff();
