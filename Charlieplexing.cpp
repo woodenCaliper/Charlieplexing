@@ -1,4 +1,16 @@
+/**
+ * @file Charlieplexing.cpp
+ * @author woodenCaliper (you@domain.com)
+ * @brief 
+ * @version 0.1
+ * @date 2018-11-06
+ * 
+ * @copyright Copyright (c) 2018
+ * 
+ */
+
 #include "Charlieplexing.h"
+
 
 /**
  * @brief Construct a new Charlieplexing Class:: Charlieplexing Class object
@@ -21,7 +33,7 @@ CharlieplexingClass::CharlieplexingClass(){
  * @brief Set using arduino pins.
  *
  * @param[in] pins[]     any pins that connecting to LED
- * @param[in] numOfUsePins  length of pins array
+ * @param[in] numOfPins  length of pins array
  */
 void CharlieplexingClass::begin(byte pins[], byte numOfPins){
   
@@ -37,7 +49,7 @@ void CharlieplexingClass::begin(byte pins[], byte numOfPins){
  *
  * @param[in] anodePin arduino pin conected to LED anode
  * @param[in] cathodePin arduino pin conected to LED cathode
- * @return unsigned int unique LED ID
+ * @return [unsigned int] unique LED ID
  */
 unsigned int CharlieplexingClass::getLedId(byte anodePin, byte cathodePin){
   return ((unsigned int)anodePin<<8) | cathodePin;
@@ -77,18 +89,6 @@ void CharlieplexingClass::light(unsigned int ledId, bool lightOn){
 }
 
 /**
- * @brief Light on the LED. -> wait for time that you set in setOneShotTime() function. -> light off the LED.
- *
- * @param[in] ledId
- */
-void CharlieplexingClass::lightOneShot(unsigned int ledId){
-  light(ledId, true);
-  delayMicroseconds(lightingTime);
-  light(ledId, false);
-}
-
-
-/**
  * @brief Light off the all LED.
  * @param
  */
@@ -99,10 +99,22 @@ void CharlieplexingClass::allLightOff(){
 }
 
 /**
+ * @brief Light on the LED. -> wait for time that you set in setOneShotTime() function. -> light off the LED.
+ *
+ * @param[in] ledId
+ */
+void CharlieplexingClass::lightOneShot(unsigned int ledId){
+  light(ledId, true);
+  delayMicroseconds(lightingTime);
+  light(ledId, false);
+}
+
+/**
  * @brief Light multi LEDs that in order(dynamic lighting).
  *
  * @param[in] ledsId[]    address of LEDs ID array by getLedId() function.
  * @param[in] numOfLeds   length of ledsId array
+ * 
  * @details take processing time about (oneShotTime)*(Number of using pin)+300us.<br>
  *          WARN: if this use, overwrite the config in setLedState() function.
  */
@@ -158,7 +170,8 @@ void CharlieplexingClass::setLedState(unsigned int ledsId[], byte numOfLeds){
 
 /**
  * @brief light LED function for use timer. repeat this at regular intervals
- * @param notting
+ * 
+ * @param
  * @details I recommend do this at about 2ms intervals
  */
 void CharlieplexingClass::updateLightingState(){
