@@ -1,12 +1,12 @@
 /**
  * @file Charlieplexing.cpp
  * @author woodenCaliper (you@domain.com)
- * @brief 
+ * @brief
  * @version 0.1
  * @date 2018-11-06
- * 
+ *
  * @copyright Copyright (c) 2018
- * 
+ *
  */
 
 #include "Charlieplexing.h"
@@ -36,7 +36,6 @@ CharlieplexingClass::CharlieplexingClass(){
  * @param[in] numOfPins  length of pins array
  */
 void CharlieplexingClass::begin(byte pins[], byte numOfPins){
-  
   numOfUsePin = numOfPins;
   for(byte i=0; i<numOfPins; i++){
     usePins[i]=pins[i];
@@ -114,18 +113,16 @@ void CharlieplexingClass::lightOneShot(unsigned int ledId){
  *
  * @param[in] ledsId[]    address of LEDs ID array by getLedId() function.
  * @param[in] numOfLeds   length of ledsId array
- * 
+ *
  * @details take processing time about (oneShotTime)*(Number of using pin)+300us.<br>
  *          WARN: if this use, overwrite the config in setLedState() function.
  */
 void CharlieplexingClass::multiLightOneShot(unsigned int ledsId[], byte numOfLeds){
-  setLedState(ledId, numOfLeds);
-  for(uint8_t i=0; i<usePins, i++){
+  setLedState(ledsId, numOfLeds);
+  for(uint8_t i=0; i<usePins; i++){
     updateLightingState();
     delayMicroseconds(lightingTime);
   }
-
-
   /*
   byte alreadyOnCount=0;
   unsigned int afterLightLeds[MAX_PIN];
@@ -142,8 +139,8 @@ void CharlieplexingClass::multiLightOneShot(unsigned int ledsId[], byte numOfLed
     }
     for(byte i=0; i<afterLedsCount; i++){
       light(afterLightLeds[i], true);
-    } 
-    
+    }
+
     delayMicroseconds(lightingTime);
     allLightOff();
     if(alreadyOnCount==numOfLeds){
@@ -156,7 +153,7 @@ void CharlieplexingClass::multiLightOneShot(unsigned int ledsId[], byte numOfLed
 
 /**
  * @brief set LEDs for light in updateLedState() function.
- * 
+ *
  * @param[in] ledsId[]  address of LEDs ID array by getLedId() function.
  * @param[in] numOfLeds length of ledsId array
  */
@@ -170,7 +167,7 @@ void CharlieplexingClass::setLedState(unsigned int ledsId[], byte numOfLeds){
 
 /**
  * @brief light LED function for use timer. repeat this at regular intervals
- * 
+ *
  * @param
  * @details I recommend do this at about 2ms intervals
  */
