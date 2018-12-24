@@ -22,18 +22,18 @@
 class CharlieplexingClass{
   public:
   CharlieplexingClass();
-  
+
   //setting functions>>
   void begin(byte pinsNumber[], byte numOfPins);
-  void setOneShotTime(unsigned long lightOnTime);  
+  void setOneShotTime(unsigned long lightOnTime);
   //<<setting functions
 
-  
-  unsigned int getLedId(byte anodePin, byte cathodePin);  
-  
+
+  unsigned int getLedId(byte anodePin, byte cathodePin);
+
   void lightOneShot(unsigned int ledId);
-  void multiLightOneShot(unsigned int ledsId[], byte numOfLeds);
-  
+  void lightOneShot(unsigned int ledsId[], byte numOfLeds);
+
   void setLedState(unsigned int ledsId[], byte numOfLeds);
   void updateLightingState();
 

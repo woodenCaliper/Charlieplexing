@@ -117,7 +117,7 @@ void CharlieplexingClass::lightOneShot(unsigned int ledId){
  * @details take processing time about (oneShotTime)*(Number of using pin)+300us.<br>
  *          WARN: if this use, overwrite the config in setLedState() function.
  */
-void CharlieplexingClass::multiLightOneShot(unsigned int ledsId[], byte numOfLeds){
+void CharlieplexingClass::lightOneShot(unsigned int ledsId[], byte numOfLeds){
   setLedState(ledsId, numOfLeds);
   for(uint8_t i=0; i<usePins; i++){
     updateLightingState();
