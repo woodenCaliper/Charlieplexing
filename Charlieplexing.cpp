@@ -1,9 +1,9 @@
 /**
  * @file Charlieplexing.cpp
- * @author woodenCaliper (you@domain.com)
+ * @author woodenCaliper
  * @brief
- * @version 0.1
- * @date 2018-11-06
+ * @version 0.2
+ * @date 2018-12-27
  *
  * @copyright Copyright (c) 2018
  *
@@ -11,36 +11,26 @@
 
 #include "Charlieplexing.h"
 
-
 /**
- * @brief Construct a new Charlieplexing Class:: Charlieplexing Class object
- *
- */
-CharlieplexingClass::CharlieplexingClass(){
-  numOfUsePin=0;
-  lightingTime=1000; //us
-
-  for(byte i=0; i<100; i++){
-    settedLeds[i]=0;
-  }
-  numOfSettedLeds=0;
-  drivingUsePinAdrs=0;
-}
-
-
-
-/**
- * @brief Set using arduino pins.
+ * @brief Construct. Set use arduino pins.
  *
  * @param[in] pins[]     any pins that connecting to LED
  * @param[in] numOfPins  length of pins array
  */
-void CharlieplexingClass::begin(byte pins[], byte numOfPins){
+CharlieplexingClass::CharlieplexingClass(const byte pins[], byte numOfPins){
+  lightingTime=1000; //us
   numOfUsePin = numOfPins;
   for(byte i=0; i<numOfPins; i++){
     usePins[i]=pins[i];
-    pinMode(pins[i], INPUT);
+    setPinState(i, HIGH_INP);
   }
+  for(byte i=0; i<CHARLIEPLEXING_MAX_USE_PIN; i++){
+    for(byte j=0; j<CHARLIEPLEXING_MAX_USE_PIN; j++){
+      reservationPinState[i][j] = HIGH_INP;
+    }
+  }
+  drivingAnodePinIndex=0;
+  needUpdateTimes=0;
 }
 
 /**
@@ -51,39 +41,40 @@ void CharlieplexingClass::begin(byte pins[], byte numOfPins){
  * @return [unsigned int] unique LED ID
  */
 unsigned int CharlieplexingClass::getLedId(byte anodePin, byte cathodePin){
-  return ((unsigned int)anodePin<<8) | cathodePin;
+  byte anodeIndex, cathodeIndex;
+  for(byte i=0; i<numOfUsePin; i++){
+    if(usePins[i] == anodePin){
+      anodeIndex=i;
+    }
+    else if(usePins[i] == cathodePin){
+      cathodeIndex=i;
+    }
+  }
+  return ((unsigned int)anodeIndex<<8) | cathodeIndex;
 }
 
 /**
  * @brief Set light on time, when called OneShot() function.
- *
- * @param[in] lightOnTime unit is micro second. default 1000
+ * @param[in] lightOnTime unit is micro second. default 1000.
  */
 void CharlieplexingClass::setOneShotTime(unsigned long lightOnTime){
   lightingTime=lightOnTime;
 }
 
-
-
-/**
- * @brief Direct LED pin control.
- *
- * @param[in] ledId   LED ID by getLedId() function.
- * @param[in] lightOn true:light on, false:light off
- */
-void CharlieplexingClass::light(unsigned int ledId, bool lightOn){
-  byte anodePin = ledId>>8;
-  byte cathodePin = ledId&0x0f;
-
-  if(lightOn){  //anode:HIGH, cathode:LOW
-    pinMode(anodePin, OUTPUT);
-    digitalWrite(anodePin, HIGH);
-    pinMode(cathodePin, OUTPUT);
-    digitalWrite(cathodePin, LOW);
-  }
-  else{    //set high inpedance
-    pinMode(anodePin, INPUT);
-    pinMode(cathodePin, INPUT);
+void CharlieplexingClass::setPinState(byte usePinIndex, byte state){
+  usePinState[usePinIndex] = state;
+  switch(state){
+    case LOW:
+      pinMode(usePins[usePinIndex], OUTPUT);
+      digitalWrite(usePins[usePinIndex], LOW);
+    break;
+    case HIGH:
+      pinMode(usePins[usePinIndex], OUTPUT);
+      digitalWrite(usePins[usePinIndex], HIGH);
+    break;
+    case HIGH_INP:
+      pinMode(usePins[usePinIndex], INPUT);
+    break;
   }
 }
 
@@ -103,9 +94,11 @@ void CharlieplexingClass::allLightOff(){
  * @param[in] ledId
  */
 void CharlieplexingClass::lightOneShot(unsigned int ledId){
-  light(ledId, true);
+  setPinState(ledId>>8, HIGH);
+  setPinState((byte)ledId, LOW);
   delayMicroseconds(lightingTime);
-  light(ledId, false);
+  setPinState(ledId>>8, HIGH_INP);
+  setPinState((byte)ledId, HIGH_INP);
 }
 
 /**
@@ -114,41 +107,15 @@ void CharlieplexingClass::lightOneShot(unsigned int ledId){
  * @param[in] ledsId[]    address of LEDs ID array by getLedId() function.
  * @param[in] numOfLeds   length of ledsId array
  *
- * @details take processing time about (oneShotTime)*(Number of using pin)+300us.<br>
- *          WARN: if this use, overwrite the config in setLedState() function.
+ * @details WARN: if this use, overwrite the config in setLedState() function.
  */
-void CharlieplexingClass::lightOneShot(unsigned int ledsId[], byte numOfLeds){
+void CharlieplexingClass::lightOneShot(const unsigned int ledsId[], byte numOfLeds){
   setLedState(ledsId, numOfLeds);
-  for(uint8_t i=0; i<usePins; i++){
+  drivingAnodePinIndex=0;
+  for(byte i=0; i<needUpdateTimes; i++){
     updateLightingState();
     delayMicroseconds(lightingTime);
   }
-  /*
-  byte alreadyOnCount=0;
-  unsigned int afterLightLeds[MAX_PIN];
-  byte afterLedsCount=0;
-
-  allLightOff();
-  for(byte i=0; i<numOfUsePin; i++){
-    for(byte i=0; i<numOfLeds; i++){
-      if(usePins[i]==(byte)ledsId[i]){  //usePins[i]がcathodeなのを選択、ledsIdの右8bitとチェック
-        afterLightLeds[afterLedsCount]=ledsId[i];
-        afterLedsCount++;
-        alreadyOnCount++;
-      }
-    }
-    for(byte i=0; i<afterLedsCount; i++){
-      light(afterLightLeds[i], true);
-    }
-
-    delayMicroseconds(lightingTime);
-    allLightOff();
-    if(alreadyOnCount==numOfLeds){
-      return;
-    }
-    afterLedsCount=0;
-  }
-  */
 }
 
 /**
@@ -157,27 +124,54 @@ void CharlieplexingClass::lightOneShot(unsigned int ledsId[], byte numOfLeds){
  * @param[in] ledsId[]  address of LEDs ID array by getLedId() function.
  * @param[in] numOfLeds length of ledsId array
  */
-void CharlieplexingClass::setLedState(unsigned int ledsId[], byte numOfLeds){
-  for(byte i=0; i<numOfLeds; i++){
-    settedLeds[i]=ledsId[i];
+void CharlieplexingClass::setLedState(const unsigned int ledsId[], byte numOfLeds){
+  for(byte i=0; i<numOfUsePin; i++){
+    for(byte j=0; j<numOfUsePin; j++){
+      //対角要素はHIGH, それ以外はHIGH_INPで初期化
+      reservationPinState[i][j] = i==j ? HIGH : HIGH_INP;
+    }
   }
-  numOfSettedLeds = numOfLeds;
-  drivingUsePinAdrs=0;
+  //ledsIdからreservationPinStateの2次元配列に変換
+  for(byte i=0; i<numOfLeds; i++){
+    reservationPinState[ledsId[i]>>8][ledsId[i]&0xff] = LOW;
+  }
+  //update回数を最小にするために、光らせない行を削除
+  byte toIndex = 0;
+  for(byte fromIndex=0; fromIndex<numOfUsePin; fromIndex++){
+    for(byte j=0; j<numOfUsePin; j++){ //横の配列探索
+      if(reservationPinState[fromIndex][j] == LOW){ //LOWが一つでもあればLEDは光る
+        for(byte k=0; k<numOfUsePin; k++){ //横配列のコピー
+          reservationPinState[toIndex][k] = reservationPinState[fromIndex][k];
+        }
+        toIndex++;
+        break;
+      }
+    }
+  }
+  needUpdateTimes = toIndex;
+  if(drivingAnodePinIndex>needUpdateTimes){
+    drivingAnodePinIndex = 0;
+  }
 }
 
 /**
  * @brief light LED function for use timer. repeat this at regular intervals
- *
  * @param
  * @details I recommend do this at about 2ms intervals
  */
 void CharlieplexingClass::updateLightingState(){
-  allLightOff();
-  for(byte i=0; i<numOfSettedLeds; i++){ //光らせたいLEDを全探査
-    if(usePins[drivingUsePinAdrs]==(byte)settedLeds[i]){  //usePins[i]がcathodeなのを選択、ledsIdの右8bitとチェック
-      light(settedLeds[i], true);
+  if(needUpdateTimes>=0){
+    for(byte i=0; i<numOfUsePin; i++){
+      if(usePinState[i] != reservationPinState[drivingAnodePinIndex][i]){
+        setPinState(i, HIGH_INP); //ちらつき防止のため、変更されるピンだけHIGH_INPにする
+      }
     }
+    for(byte i=0; i<numOfUsePin; i++){
+      byte state = reservationPinState[drivingAnodePinIndex][i];
+      if(state != HIGH_INP){
+        setPinState(i, state);
+      }
+    }
+    drivingAnodePinIndex = drivingAnodePinIndex+1==needUpdateTimes ? 0 : drivingAnodePinIndex+1;
   }
-  drivingUsePinAdrs++;
-  drivingUsePinAdrs%=numOfUsePin;
 }

@@ -15,41 +15,40 @@
 
 #include <arduino.h>
 
-#ifndef MAX_PIN
-#define MAX_PIN 20
+#ifndef CHARLIEPLEXING_MAX_USE_PIN
+#define CHARLIEPLEXING_MAX_USE_PIN 20
 #endif
 
 class CharlieplexingClass{
   public:
-  CharlieplexingClass();
+  CharlieplexingClass(const byte pins[], byte numOfPins);
 
-  //setting functions>>
-  void begin(byte pinsNumber[], byte numOfPins);
   void setOneShotTime(unsigned long lightOnTime);
-  //<<setting functions
-
-
   unsigned int getLedId(byte anodePin, byte cathodePin);
 
+  void allLightOff();
   void lightOneShot(unsigned int ledId);
-  void lightOneShot(unsigned int ledsId[], byte numOfLeds);
+  void lightOneShot(const unsigned int ledsId[], byte numOfLeds);
 
-  void setLedState(unsigned int ledsId[], byte numOfLeds);
+  void setLedState(const unsigned int ledsId[], byte numOfLeds);
   void updateLightingState();
 
+
   private:  //functions
-  void light(unsigned int ledId, bool lightOn);
-  void allLightOff();
+  void setPinState(byte , byte);
+  // void light(unsigned int ledId, bool lightOn);
 
   private:  //variables
-  byte usePins[MAX_PIN];
+  byte usePins[CHARLIEPLEXING_MAX_USE_PIN];
+  byte usePinState[CHARLIEPLEXING_MAX_USE_PIN];
   byte numOfUsePin;
   unsigned long lightingTime;
-  const int HIGH_INP=-1;
 
-  unsigned int settedLeds[100];
-  byte numOfSettedLeds;
-  byte drivingUsePinAdrs;
+  byte reservationPinState[CHARLIEPLEXING_MAX_USE_PIN][CHARLIEPLEXING_MAX_USE_PIN];//横がusePinの状態、縦はupdateするときの順番
+  byte needUpdateTimes;
+  byte drivingAnodePinIndex;
+
+  const static byte HIGH_INP=2;
 };
 
 #endif
