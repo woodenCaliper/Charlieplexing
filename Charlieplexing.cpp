@@ -19,6 +19,7 @@
  */
 CharlieplexingClass::CharlieplexingClass(const byte pins[], byte numOfPins){
   lightingTime=1000; //us
+  drivingAnodePinIndex=0;
   numOfUsePin = numOfPins;
   for(byte i=0; i<numOfPins; i++){
     usePins[i]=pins[i];
@@ -29,8 +30,6 @@ CharlieplexingClass::CharlieplexingClass(const byte pins[], byte numOfPins){
       reservationPinState[i][j] = HIGH_INP;
     }
   }
-  drivingAnodePinIndex=0;
-  needUpdateTimes=0;
 }
 
 /**
@@ -112,7 +111,7 @@ void CharlieplexingClass::lightOneShot(unsigned int ledId){
 void CharlieplexingClass::lightOneShot(const unsigned int ledsId[], byte numOfLeds){
   setLedState(ledsId, numOfLeds);
   drivingAnodePinIndex=0;
-  for(byte i=0; i<needUpdateTimes; i++){
+  for(byte i=0; i<numOfUsePin; i++){
     updateLightingState();
     delayMicroseconds(lightingTime);
   }
@@ -125,32 +124,22 @@ void CharlieplexingClass::lightOneShot(const unsigned int ledsId[], byte numOfLe
  * @param[in] numOfLeds length of ledsId array
  */
 void CharlieplexingClass::setLedState(const unsigned int ledsId[], byte numOfLeds){
+  resetLedState();
+  addLedState(ledsId, numOfLeds);
+}
+
+void CharlieplexingClass::addLedState(const unsigned int ledsId[], byte numOfLeds){
+  for(byte i=0; i<numOfLeds; i++){
+    reservationPinState[ledsId[i]>>8][ledsId[i]&0xff] = LOW;
+  }
+}
+
+void CharlieplexingClass::resetLedState(){
   for(byte i=0; i<numOfUsePin; i++){
     for(byte j=0; j<numOfUsePin; j++){
       //対角要素はHIGH, それ以外はHIGH_INPで初期化
       reservationPinState[i][j] = i==j ? HIGH : HIGH_INP;
     }
-  }
-  //ledsIdからreservationPinStateの2次元配列に変換
-  for(byte i=0; i<numOfLeds; i++){
-    reservationPinState[ledsId[i]>>8][ledsId[i]&0xff] = LOW;
-  }
-  //update回数を最小にするために、光らせない行を削除
-  byte toIndex = 0;
-  for(byte fromIndex=0; fromIndex<numOfUsePin; fromIndex++){
-    for(byte j=0; j<numOfUsePin; j++){ //横の配列探索
-      if(reservationPinState[fromIndex][j] == LOW){ //LOWが一つでもあればLEDは光る
-        for(byte k=0; k<numOfUsePin; k++){ //横配列のコピー
-          reservationPinState[toIndex][k] = reservationPinState[fromIndex][k];
-        }
-        toIndex++;
-        break;
-      }
-    }
-  }
-  needUpdateTimes = toIndex;
-  if(drivingAnodePinIndex>needUpdateTimes){
-    drivingAnodePinIndex = 0;
   }
 }
 
@@ -160,18 +149,16 @@ void CharlieplexingClass::setLedState(const unsigned int ledsId[], byte numOfLed
  * @details I recommend do this at about 2ms intervals
  */
 void CharlieplexingClass::updateLightingState(){
-  if(needUpdateTimes>=0){
-    for(byte i=0; i<numOfUsePin; i++){
-      if(usePinState[i] != reservationPinState[drivingAnodePinIndex][i]){
-        setPinState(i, HIGH_INP); //ちらつき防止のため、変更されるピンだけHIGH_INPにする
-      }
+  for(byte i=0; i<numOfUsePin; i++){
+    if(usePinState[i] != reservationPinState[drivingAnodePinIndex][i]){
+      setPinState(i, HIGH_INP); //ちらつき防止のため、変更されるピンだけHIGH_INPにする
     }
-    for(byte i=0; i<numOfUsePin; i++){
-      byte state = reservationPinState[drivingAnodePinIndex][i];
-      if(state != HIGH_INP){
-        setPinState(i, state);
-      }
-    }
-    drivingAnodePinIndex = drivingAnodePinIndex+1==needUpdateTimes ? 0 : drivingAnodePinIndex+1;
   }
+  for(byte i=0; i<numOfUsePin; i++){
+    byte state = reservationPinState[drivingAnodePinIndex][i];
+    if(state != HIGH_INP){
+      setPinState(i, state);
+    }
+  }
+  drivingAnodePinIndex = drivingAnodePinIndex+1==numOfUsePin ? 0 : drivingAnodePinIndex+1;
 }

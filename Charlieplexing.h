@@ -30,6 +30,8 @@ class CharlieplexingClass{
   void lightOneShot(unsigned int ledId);
   void lightOneShot(const unsigned int ledsId[], byte numOfLeds);
 
+  void resetLedState();
+  void addLedState(const unsigned int ledsId[], byte numOfLeds);
   void setLedState(const unsigned int ledsId[], byte numOfLeds);
   void updateLightingState();
 
